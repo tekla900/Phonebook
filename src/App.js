@@ -7,7 +7,6 @@ import Form from './components/Form'
 const App = () => {
 
   const [persons, setPersons] = useState([])
-
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const[searchName, setNewSearch] = useState('')
@@ -17,10 +16,11 @@ const App = () => {
 
   const hook = () => {
     axios
-      .get('http://localhost:3001/persons')
+      .get('http://localhost:3002/persons')
       .then(response => {
         setPersons(response.data)
         console.log(response.data)
+        console.log(persons, 'hihbj')
       })
   }
   useEffect(hook, [])
@@ -66,9 +66,9 @@ const App = () => {
   const formData = {
     addContact,
     newName,
-    setNewName,
+    handleNameChange,
     newNumber,
-    setNewNumber,
+    handleNumberChange,
   };
 
   const searchData ={

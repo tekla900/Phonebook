@@ -1,6 +1,7 @@
 // import React from "react";
 
 const Person = ({ personsFilter }) => {
+  console.log(personsFilter);
     return personsFilter.map ((person) => (
       <li key={person.id}>
         {person.name} <span>{person.number}</span></li>
