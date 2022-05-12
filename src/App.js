@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import personService from './services/persons'
 import axios from 'axios'
 import Person from './components/Person'
 import Search from './components/Search'
@@ -13,17 +14,13 @@ const App = () => {
   const[personsFilter, setPersonsFilter] = useState(persons)
 
 
-
-  const hook = () => {
-    axios
-      .get('http://localhost:3002/persons')
-      .then(response => {
-        setPersons(response.data)
-        console.log(response.data)
-        console.log(persons, 'hihbj')
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPerson => {
+        setPersons(initialPerson.data)
       })
-  }
-  useEffect(hook, [])
+  }, [])
   
 
 
@@ -39,16 +36,15 @@ const App = () => {
       if (currentPerson.length === 1) {
         alert(`${newName} is already added to phonebook`)
       } else {
-        axios
-        .post('http://localhost:3002/persons', nameObject)
-        .then(response => {
-          console.log(response)
-          setPersons(persons.concat(nameObject))
-          setNewName('')
-          setNewNumber('')
-        })
-    }
+        personService
+          .create(nameObject)
+          .then(response => {
+            setPersons(persons.concat(response.data))
+            setNewName('')
+            setNewNumber('')
+          })
   }
+}
 
   const filterPersons = (event) => {
     const searchName = event.target.value.toLowerCase()
