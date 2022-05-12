@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-import axios from 'axios'
+// import axios from 'axios'
 import Person from './components/Person'
 import Search from './components/Search'
 import Form from './components/Form'
+import axios from 'axios'
 
 const App = () => {
 
@@ -18,7 +19,7 @@ const App = () => {
     personService
       .getAll()
       .then(initialPerson => {
-        setPersons(initialPerson.data)
+        setPersons(initialPerson)
       })
   }, [])
   
@@ -38,8 +39,8 @@ const App = () => {
       } else {
         personService
           .create(nameObject)
-          .then(response => {
-            setPersons(persons.concat(response.data))
+          .then(initialPerson => {
+            setPersons(persons.concat(initialPerson))
             setNewName('')
             setNewNumber('')
           })
@@ -64,6 +65,13 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handleDelete = (id) => {
+    const url = `http://localhost:3002/persons/${id}`
+    axios
+      .delete(url)
+    console.log('deleted')
+  }
+
   const formData = {
     addContact,
     newName,
@@ -84,7 +92,7 @@ const App = () => {
       <Form data={formData} />
       <h2>Numbers</h2>
       <ul>
-           <Person personsFilter={personsFilter} />
+           <Person personsFilter={personsFilter} handleDelete={handleDelete}/>
       </ul>
     </div>
   )
