@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-// import axios from 'axios'
 import Person from './components/Person'
 import Search from './components/Search'
 import Form from './components/Form'
 import axios from 'axios'
 
 const App = () => {
-
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const[searchName, setNewSearch] = useState('')
-  const[personsFilter, setPersonsFilter] = useState(persons)
+  const [searchName, setNewSearch] = useState('')
+  const [personsFilter, setPersonsFilter] = useState(persons)
 
-
+// წამოღება სერვერიდან 
   useEffect(() => {
     personService
       .getAll()
@@ -23,19 +21,21 @@ const App = () => {
       })
   }, [])
   
-
-
   const addContact = (event) => {
     event.preventDefault()
     const nameObject = {
       name: newName,
       number: newNumber,
-      id: persons.length+1,
     }
 
-  const currentPerson = persons.filter((person) => person.name === newName);
+    const currentPerson = persons.filter((person) => person.name === newName);
       if (currentPerson.length === 1) {
-        alert(`${newName} is already added to phonebook`)
+        const id = currentPerson.id
+        const url = `http://localhost:3002/persons/${id}`
+        if (window.confirm(`${newName} is already added to phonebook, do you want to update it?`)){
+          personService
+            .update(url, nameObject)
+        }
       } else {
         personService
           .create(nameObject)
@@ -46,7 +46,7 @@ const App = () => {
           })
   }
 }
-
+  
   const filterPersons = (event) => {
     const searchName = event.target.value.toLowerCase()
     setNewSearch(searchName)
@@ -69,6 +69,8 @@ const App = () => {
     const url = `http://localhost:3002/persons/${id}`
     axios
       .delete(url)
+      .then(response =>
+        response.data)
     console.log('deleted')
   }
 

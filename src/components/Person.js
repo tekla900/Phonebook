@@ -1,5 +1,3 @@
-// import React from "react";
-
 const Person = ({ personsFilter, handleDelete }) => {
   console.log(personsFilter);
     return personsFilter.map ((person) => (
@@ -10,11 +8,5 @@ const Person = ({ personsFilter, handleDelete }) => {
     )
   )
   }
-
-// const Person = ({ person }) => {
-//   return (
-//     <li key={person.id}>{person.name} {person.number}</li>
-//   )
-// }
   
   export default Person
