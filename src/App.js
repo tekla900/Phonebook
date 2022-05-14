@@ -23,30 +23,47 @@ const App = () => {
   
   const addContact = (event) => {
     event.preventDefault()
-    const nameObject = {
-      name: newName,
-      number: newNumber,
+    const person = persons.filter((person) =>
+      person.name === newName
+    )
+    
+    const personToAdd = person[0]
+    const updatedPerson = { ...personToAdd, number: newNumber }
+    
+    if (person.length !== 0) {
+    if (window.confirm(`${personToAdd.name} is already added to the phonebook, replace the old number with a new one ?`)) {
+      personService
+        .update(updatedPerson.id, updatedPerson).then(returnedPerson => {
+          console.log(`${returnedPerson.name} successfully updated`)
+          setPersons(persons.map(personItem => personItem.id !== personToAdd.id ? personItem : returnedPerson))
+          setNewName('')
+          setNewNumber('')
+    })
+    .catch((error) => {
+      console.log(error)
+      setPersons(persons.filter(person => person.id !== updatedPerson.id))
+      setNewName('')
+      setNewNumber('')
+    })
+    } else {
+      const personToAdd = {
+        name: newName,
+        number: newNumber
     }
-
-    const currentPerson = persons.filter((person) => person.name === newName);
-      if (currentPerson.length === 1) {
-        const id = currentPerson.id
-        const url = `http://localhost:3002/persons/${id}`
-        if (window.confirm(`${newName} is already added to phonebook, do you want to update it?`)){
-          personService
-            .update(url, nameObject)
-        }
-      } else {
-        personService
-          .create(nameObject)
-          .then(initialPerson => {
-            setPersons(persons.concat(initialPerson))
-            setNewName('')
-            setNewNumber('')
-          })
+    personService
+      .create(personToAdd)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+    })  
+    .catch(error => {
+    console.log(error.response.data)
+    })
+    }
+    } 
   }
-}
-  
+
   const filterPersons = (event) => {
     const searchName = event.target.value.toLowerCase()
     setNewSearch(searchName)
@@ -66,11 +83,8 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    const url = `http://localhost:3002/persons/${id}`
-    axios
-      .delete(url)
-      .then(response =>
-        response.data)
+    personService
+      .remove(id)
     console.log('deleted')
   }
 
