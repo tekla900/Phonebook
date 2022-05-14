@@ -3,7 +3,20 @@ import personService from './services/persons'
 import Person from './components/Person'
 import Search from './components/Search'
 import Form from './components/Form'
-import axios from 'axios'
+import './index.css'
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,6 +24,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchName, setNewSearch] = useState('')
   const [personsFilter, setPersonsFilter] = useState(persons)
+  const [message, setMessage] = useState('some error happened...')
 
 // წამოღება სერვერიდან 
   useEffect(() => {
@@ -24,44 +38,68 @@ const App = () => {
   const addContact = (event) => {
     event.preventDefault()
     const person = persons.filter((person) =>
-      person.name === newName
+        person.name === newName
     )
-    
+
     const personToAdd = person[0]
     const updatedPerson = { ...personToAdd, number: newNumber }
-    
+
     if (person.length !== 0) {
-    if (window.confirm(`${personToAdd.name} is already added to the phonebook, replace the old number with a new one ?`)) {
-      personService
-        .update(updatedPerson.id, updatedPerson).then(returnedPerson => {
-          console.log(`${returnedPerson.name} successfully updated`)
-          setPersons(persons.map(personItem => personItem.id !== personToAdd.id ? personItem : returnedPerson))
-          setNewName('')
-          setNewNumber('')
-    })
-    .catch((error) => {
-      console.log(error)
-      setPersons(persons.filter(person => person.id !== updatedPerson.id))
-      setNewName('')
-      setNewNumber('')
-    })
+      if (window.confirm(`${personToAdd.name} is already added to the phonebook, replace the old number with a new one ?`)) {
+        personService
+          .update(updatedPerson.id, updatedPerson).then(returnedPerson => {
+            console.log(`${returnedPerson.name} successfully updated`)
+            setPersons(persons.map(personItem => personItem.id !== personToAdd.id ? personItem : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+            setMessage(
+              `${updatedPerson.name} was successfully updated`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+          .catch((error) => {
+            console.log(error)
+            setPersons(persons.filter(person => person.id !== updatedPerson.id))
+            setNewName('')
+            setNewNumber('')
+            setMessage(
+              `[ERROR] ${updatedPerson.name} was already deleted from server`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+      }
     } else {
-      const personToAdd = {
-        name: newName,
-        number: newNumber
+        const personToAdd = {
+            name: newName,
+            number: newNumber
+          }
+          personService
+            .create(personToAdd)
+            .then(returnedPerson => {
+              setPersons(persons.concat(returnedPerson))
+              setNewName('')
+              setNewNumber('')
+              setMessage(
+                `${newName} was successfully added`
+              )
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
+            })
+            .catch(error => {
+              setMessage(
+                `[ERROR] ${error.response.data.error}`
+              )
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
+              console.log(error.response.data)
+            })
     }
-    personService
-      .create(personToAdd)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-    })  
-    .catch(error => {
-    console.log(error.response.data)
-    })
-    }
-    } 
   }
 
   const filterPersons = (event) => {
@@ -104,6 +142,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Search data={searchData} />
       <Form data={formData} />
       <h2>Numbers</h2>
