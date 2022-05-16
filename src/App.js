@@ -24,7 +24,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchName, setNewSearch] = useState('')
   const [personsFilter, setPersonsFilter] = useState(persons)
-  const [message, setMessage] = useState('some error happened...')
+  const [message, setMessage] = useState(null)
 
 // წამოღება სერვერიდან 
   useEffect(() => {
