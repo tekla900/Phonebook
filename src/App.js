@@ -22,8 +22,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [searchName, setNewSearch] = useState('')
-  const [personsFilter, setPersonsFilter] = useState(persons)
+  const[searchTerm, setSearchTerm] = useState('')
   const [message, setMessage] = useState(null)
 
 // წამოღება სერვერიდან 
@@ -103,13 +102,7 @@ const App = () => {
   }
 
   const filterPersons = (event) => {
-    const searchName = event.target.value.toLowerCase()
-    setNewSearch(searchName)
-    const newPersons = persons.filter (
-      (person) => 
-        person.name.toLowerCase().search(searchName) !== -1
-    )
-    setPersonsFilter(newPersons)
+    setSearchTerm(event.target.value.toLowerCase())
   }
 
   const handleNameChange = (event) => {
@@ -135,7 +128,7 @@ const App = () => {
   };
 
   const searchData ={
-    searchName,
+    searchTerm,
     filterPersons
   }
 
@@ -147,7 +140,7 @@ const App = () => {
       <Form data={formData} />
       <h2>Numbers</h2>
       <ul>
-           <Person personsFilter={personsFilter} handleDelete={handleDelete}/>
+      <Person persons={persons} searchTerm={searchTerm} handleDelete={handleDelete}/> 
       </ul>
     </div>
   )
