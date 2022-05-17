@@ -116,6 +116,11 @@ const App = () => {
   const handleDelete = (id) => {
     personService
       .remove(id)
+      .then((response) => {
+        const newPersons = persons.filter((person) => person.id !== id);
+        setPersons(newPersons);
+        setMessage('successfully deleted')
+      })
     console.log('deleted')
   }
 
