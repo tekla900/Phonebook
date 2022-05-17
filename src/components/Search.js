@@ -1,11 +1,11 @@
 import React from "react";
 
 const Search = ({
-    data: { searchName, filterPersons }, 
+    data: { searchTerm, filterPersons }, 
 }) => {
         return (
             <div>filter shown with: <input
-                            value={searchName}  
+                            value={searchTerm}  
                             onChange={filterPersons}/>
              </div>
         )
